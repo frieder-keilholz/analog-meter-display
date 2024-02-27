@@ -4,7 +4,7 @@ import yaml.loader
 import time
 import logging
 
-logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
+logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
 
 meters = yaml.safe_load(open('meters.yml'))
 
