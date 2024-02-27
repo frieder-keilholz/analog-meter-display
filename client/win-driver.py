@@ -19,12 +19,20 @@ options = {
     'memory-percent': get_memory_percent
 }
 
+last_color = 'none'
 while True:
     for meter in meters['meters']:
         logging.debug(meter)
         #get corresponding metric function
         util = options[meter['metric']]()
         
+        #set corresponding color
+        util_color = 'none'
+        for color in meter['colors']:
+            if int(util) >= color['min'] and int(util) <= color['max']:
+                util_color = color['color']
+                break
+
         #send get request to server
         url = "http://" + meter['ip']+":"+str(meter['port'])+"/util"
         logging.info(url)
