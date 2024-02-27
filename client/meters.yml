@@ -4,6 +4,11 @@ meters:
   metric: cpu-percent
   ip: 192.168.178.172
   port: 80
+  color-thresholds:
+    - target: 0
+      color: none
+    - target: 80
+      color: red
 #...
 #- laptop-ram:
 #  metric: memory-percent
