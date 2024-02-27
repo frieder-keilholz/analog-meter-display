@@ -4,7 +4,9 @@ meters:
   metric: cpu-percent
   ip: 192.168.178.172
   port: 80
-- laptop-ram:
-  metric: memory-percent
-  ip: 192.168.178.173
-  port: 80
+#...
+#- laptop-ram:
+#  metric: memory-percent
+#  ip: 192.168.178.172
+#  port: 80
+#...
