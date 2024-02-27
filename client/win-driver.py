@@ -2,6 +2,7 @@ import psutil
 import urllib.request
 import yaml.loader
 import time
+import logging
 
 meters = yaml.safe_load(open('meters.yml'))
 
@@ -18,17 +19,21 @@ options = {
 
 while True:
     for meter in meters['meters']:
+        logging.debug(meter)
         #get corresponding metric function
         util = options[meter['metric']]()
         
         #send get request to server
         url = "http://" + meter['ip']+":"+str(meter['port'])+"/util"
-        print(url)
+        logging.info(url)
         try:
             urllib.request.urlopen(url + "/" + util +"/", timeout=0.5)
-        except TimeoutError:
+        except TimeoutError as te:
             print("TimeoutError")
-        except urllib.error.URLError:
+            logging.error(te)
+        except urllib.error.URLError as urle:
             print("URLError")
+            logging.error(urle)
     #await defined interval
+    logging.debug('sleep for ' + str(meters['interval']) + ' seconds')
     time.sleep(meters['interval'])
