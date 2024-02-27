@@ -4,7 +4,7 @@ import yaml.loader
 import time
 import logging
 
-logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 meters = yaml.safe_load(open('meters.yml'))
 
@@ -29,13 +29,16 @@ while True:
         url = "http://" + meter['ip']+":"+str(meter['port'])+"/util"
         logging.info(url)
         try:
-            urllib.request.urlopen(url + "/" + util +"/", timeout=0.5)
+            urllib.request.urlopen(url + "/" + util +"/", timeout=1)
         except TimeoutError as te:
             print("TimeoutError")
             logging.error(te)
         except urllib.error.URLError as urle:
             print("URLError")
             logging.error(urle)
+        except Exception as e:
+            print("Error {0}".format(e))
+            logging.error(e)
     #await defined interval
     logging.debug('sleep for ' + str(meters['interval']) + ' seconds')
     time.sleep(meters['interval'])
