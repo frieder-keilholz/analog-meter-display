@@ -4,6 +4,8 @@ import yaml.loader
 import time
 import logging
 
+logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG)
+
 meters = yaml.safe_load(open('meters.yml'))
 
 def get_cpu_percent():
