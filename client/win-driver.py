@@ -4,7 +4,7 @@ import yaml.loader
 import time
 import logging
 
-logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
+logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.WARN, format='%(asctime)s %(levelname)s %(message)s)')
 
 meters = yaml.safe_load(open('meters.yml'))
 
@@ -19,14 +19,24 @@ options = {
     'memory-percent': get_memory_percent
 }
 
+last_color = 'none'
 while True:
     for meter in meters['meters']:
         logging.debug(meter)
         #get corresponding metric function
         util = options[meter['metric']]()
         
-        #send get request to server
-        url = "http://" + meter['ip']+":"+str(meter['port'])+"/util"
+        #set corresponding color
+        util_color = 'none'
+        for color in meter['color-thresholds']:
+            if int(util) >= color['target']:
+                util_color = color['color']
+
+        #build and send GET request to server
+        if util_color != 'none':
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/color/r/"+str(util_color[0])+"/g/"+str(util_color[1])+"/b/"+str(util_color[2])
+        else:
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util
         logging.info(url)
         try:
             urllib.request.urlopen(url + "/" + util +"/", timeout=1)

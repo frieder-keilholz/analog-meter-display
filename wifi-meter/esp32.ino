@@ -1,14 +1,13 @@
-// ESP32 code for the WiFi meter
-// using PWM to control the current output
-// !set to work with an 5mA amperemeter!
-
-#define PIN  27 // YOUR PWM GPIO PIN
+#define AMPEREMETER_PIN  27 //
+#define LED_PIN 17
+#define NUMPIXELS 2
 
 #include <WiFi.h>
+#include <Adafruit_NeoPixel.h>
 
 // Daten des WiFi-Netzwerks
-const char* ssid     = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
+//const char* ssid     = "YOUR_SSID";
+//const char* password = "YOUR_PASSWORD";
 
 // Port des Webservers auf 80 setzen
 WiFiServer server(80);
@@ -24,16 +23,18 @@ const int resolution = 8;
 // set amperemeter limit duty
 int limitDuty = 120;
 
-// old
-long randNumber;
-int targetMA;
+// WS2812B LED
+Adafruit_NeoPixel ws2812b = Adafruit_NeoPixel(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
 
 void setup() {
   Serial.begin(115200);
 
-  gpio_set_drive_capability((gpio_num_t)PIN, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  ws2812b.begin();
+
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
   ledcSetup(ledChannel, freq, resolution);
-  ledcAttachPin(PIN, ledChannel);
+  ledcAttachPin(AMPEREMETER_PIN, ledChannel);
   /*
   randomSeed(analogRead(0));
   */
@@ -79,7 +80,7 @@ void loop(){
             client.println("Connection: close");
             client.println();
             
-            // turns the GPIOs on and off
+            // read util and set util value
             if (header.indexOf("GET /util/") >= 0) {
               Serial.println("UTIL set");
               String value = header.substring(header.indexOf("GET /util/")+10);
@@ -90,6 +91,27 @@ void loop(){
               if(duty > limitDuty) duty = limitDuty;
               ledcWrite(ledChannel, duty);
             }
+            // read and set color value
+            if (header.indexOf("/color/") >= 0) {
+              Serial.println("COLOR set");
+              String color_value = header.substring(header.indexOf("/color/r/")+9);
+              String r_value = color_value.substring(0, color_value.indexOf('/'));
+              Serial.print("R:");
+              Serial.println(r_value);
+              String g_value = color_value.substring(color_value.indexOf("/g/")+3,color_value.indexOf("/b"));
+              Serial.print("G:");
+              Serial.println(g_value);
+              String b_value = color_value.substring(color_value.indexOf("/b/")+3);
+              b_value = b_value.substring(0, b_value.indexOf('/'));
+              Serial.print("B:");
+              Serial.println(b_value);
+              ws2812b.clear();
+              for(int j=0; j<NUMPIXELS; j++){
+                ws2812b.setPixelColor(j, ws2812b.Color(r_value.toInt(),g_value.toInt(),b_value.toInt()));
+                ws2812b.show();
+              }
+            }
+            
             client.println();
             break;
           }else{
