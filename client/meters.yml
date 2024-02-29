@@ -6,9 +6,11 @@ meters:
   port: 80
   color-thresholds:
     - target: 0
-      color: none
+      color: [0, 255, 0]
+    - target: 40
+      color: [255, 255, 0]
     - target: 80
-      color: red
+      color: [255, 0, 0]
 #...
 #- laptop-ram:
 #  metric: memory-percent
