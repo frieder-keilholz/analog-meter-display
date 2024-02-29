@@ -28,13 +28,16 @@ while True:
         
         #set corresponding color
         util_color = 'none'
-        for color in meter['colors']:
-            if int(util) >= color['min'] and int(util) <= color['max']:
+        for color in meter['color-thresholds']:
+            if int(util) >= color['target']:
                 util_color = color['color']
                 break
 
         #send get request to server
-        url = "http://" + meter['ip']+":"+str(meter['port'])+"/util"
+        if util_color:
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/color/"+util_color
+        else:
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util
         logging.info(url)
         try:
             urllib.request.urlopen(url + "/" + util +"/", timeout=1)
