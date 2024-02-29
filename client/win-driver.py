@@ -31,7 +31,6 @@ while True:
         for color in meter['color-thresholds']:
             if int(util) >= color['target']:
                 util_color = color['color']
-                break
 
         #build and send GET request to server
         if util_color != 'none':
