@@ -33,8 +33,8 @@ while True:
                 util_color = color['color']
                 break
 
-        #send get request to server
-        if util_color:
+        #build and send GET request to server
+        if util_color != 'none':
             url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/color/"+util_color
         else:
             url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util
