@@ -4,7 +4,7 @@ import yaml.loader
 import time
 import logging
 
-logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
+logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.WARN, format='%(asctime)s %(levelname)s %(message)s)')
 
 meters = yaml.safe_load(open('meters.yml'))
 
@@ -34,7 +34,7 @@ while True:
 
         #build and send GET request to server
         if util_color != 'none':
-            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/color/"+util_color
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/color/r/"+str(util_color[0])+"/g/"+str(util_color[1])+"/b/"+str(util_color[2])
         else:
             url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util
         logging.info(url)
