@@ -1,3 +1,4 @@
+import gpustat
 import psutil
 import urllib.request
 import yaml.loader
@@ -13,6 +14,10 @@ def get_cpu_percent():
 
 def get_memory_percent():
     return str(int(psutil.virtual_memory().percent))
+
+def  get_gpu_percent():
+    gpu_stats = gpustat.GPUStatCollection.new_query()
+    return gpu_stats.gpus[0].utilization
 
 options = {
     'cpu-percent': get_cpu_percent,
