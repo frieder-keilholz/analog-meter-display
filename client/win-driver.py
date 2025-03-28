@@ -15,9 +15,25 @@ def get_cpu_percent():
 def get_memory_percent():
     return str(int(psutil.virtual_memory().percent))
 
-def  get_gpu_percent():
+def get_gpu_percent():
     gpu_stats = gpustat.GPUStatCollection.new_query()
     return gpu_stats.gpus[0].utilization
+
+def get_color(color_thresholds, util):
+    color_thresholds = sorted(color_thresholds, key=lambda x: x['target'])
+    if util <= color_thresholds[0]['target']:
+        return color_thresholds[0]['color']
+    if util >= color_thresholds[-1]['target']:
+        return color_thresholds[-1]['color']
+
+    for i in range(len(color_thresholds) - 1):
+        low, high = color_thresholds[i], color_thresholds[i + 1]
+        if low['target'] <= util <= high['target']:
+            frac = (util - low['target']) / float(high['target'] - low['target'])
+            return tuple(
+                int(low['color'][c] + frac * (high['color'][c] - low['color'][c])) 
+                for c in range(3)
+            )
 
 options = {
     'cpu-percent': get_cpu_percent,
@@ -32,10 +48,7 @@ while True:
         util = options[meter['metric']]()
         
         #set corresponding color
-        util_color = 'none'
-        for color in meter['color-thresholds']:
-            if int(util) >= color['target']:
-                util_color = color['color']
+        util_color = get_color(meter['color-thresholds'], int(util))
 
         #build and send GET request to server
         if util_color != 'none':
