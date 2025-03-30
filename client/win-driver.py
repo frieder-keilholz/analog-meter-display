@@ -54,9 +54,9 @@ while True:
         util = options[meter['metric']]()
 
         #set corresponding color
-        if meter['color-thresholds']:
+        if 'color-thresholds' in meter:
             util_color = get_color_thresholds(meter['color-thresholds'], int(util))
-        elif meter['color-gradient']:
+        elif 'color-gradient' in meter:
             util_color = get_color_gradient(meter['color-gradient'], int(util))
 
         #build and send GET request to server
