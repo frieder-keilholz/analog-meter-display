@@ -7,4 +7,4 @@ RUN pip install -r /app/requirements.txt
 
 #CMD ["cd" "/app"]
 WORKDIR /app
-CMD ["python3", ".win-driver.py"]
+CMD ["python3", "win-driver.py"]
