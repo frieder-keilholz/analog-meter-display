@@ -1,13 +1,14 @@
-#define AMPEREMETER_PIN  27 //
+#define AMPEREMETER_PIN_0  27 //
+#define AMPEREMETER_PIN_1  14
 #define LED_PIN 17
-#define NUMPIXELS 2
+#define NUMPIXELS 4
 
 #include <WiFi.h>
 #include <Adafruit_NeoPixel.h>
 
 // Daten des WiFi-Netzwerks
-//const char* ssid     = "YOUR_SSID";
-//const char* password = "YOUR_PASSWORD";
+const char* ssid     = "nein";
+const char* password = "nein";
 
 // Port des Webservers auf 80 setzen
 WiFiServer server(80);
@@ -32,9 +33,12 @@ void setup() {
 
   ws2812b.begin();
 
-  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_0, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_1, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
   ledcSetup(ledChannel, freq, resolution);
-  ledcAttachPin(AMPEREMETER_PIN, ledChannel);
+  ledcSetup(ledChannel+1, freq, resolution);
+  ledcAttachPin(AMPEREMETER_PIN_0, ledChannel);
+  ledcAttachPin(AMPEREMETER_PIN_1, ledChannel+1);
   /*
   randomSeed(analogRead(0));
   */
@@ -83,13 +87,22 @@ void loop(){
             // read util and set util value
             if (header.indexOf("GET /util/") >= 0) {
               Serial.println("UTIL set");
-              String value = header.substring(header.indexOf("GET /util/")+10);
-              value = value.substring(0,value.indexOf('/'));
-              Serial.println(value);
-              int util = value.toInt();
+              String util_value = header.substring(header.indexOf("GET /util/")+10);
+              util_value = util_value.substring(0,util_value.indexOf('/'));
+              Serial.print("Util: ");
+              Serial.println(util_value);
+              int util = util_value.toInt();
               int duty = util * 1.15;
               if(duty > limitDuty) duty = limitDuty;
+              int analog_target = header.substring(header.indexOf("/target/")+8,header.indexOf("/color/")).toInt();
+              if (analog_target>=0){
+                ledcWrite(ledChannel+analog_target, duty);
+              }else{
+                ledcWrite(ledChannel, duty);
+              }
               ledcWrite(ledChannel, duty);
+            }else{
+              Serial.println("No Util Found");
             }
             // read and set color value
             if (header.indexOf("/color/") >= 0) {
@@ -105,11 +118,21 @@ void loop(){
               b_value = b_value.substring(0, b_value.indexOf('/'));
               Serial.print("B:");
               Serial.println(b_value);
-              ws2812b.clear();
-              for(int j=0; j<NUMPIXELS; j++){
+              //ws2812b.clear();
+              int analog_target = header.substring(header.indexOf("/target/")+8,header.indexOf("/color/")).toInt();
+              int LED_Pos = 0;
+              if (analog_target>=0){
+                LED_Pos = (analog_target*2);
+              }
+              for(int j = LED_Pos; j<analog_target+2; j++){
                 ws2812b.setPixelColor(j, ws2812b.Color(r_value.toInt(),g_value.toInt(),b_value.toInt()));
                 ws2812b.show();
               }
+            }
+
+            if (header.indexOf("/target/") >= 0) {
+              Serial.print("Target Channel: ");
+              Serial.println(header.substring(header.indexOf("/target/")+8,header.indexOf("/color/")));
             }
             
             client.println();

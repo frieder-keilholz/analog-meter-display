@@ -61,9 +61,10 @@ while True:
 
         #build and send GET request to server
         if util_color != 'none':
-            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/color/r/"+str(util_color[0])+"/g/"+str(util_color[1])+"/b/"+str(util_color[2])
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/target/"+str(meter['analog-target'])+"/color/r/"+str(util_color[0])+"/g/"+str(util_color[1])+"/b/"+str(util_color[2])
+            print(url)
         else:
-            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util
+            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/target/"+str(meter['analog-target'])
         logging.info(url)
         try:
             urllib.request.urlopen(url + "/" + util +"/", timeout=1)
