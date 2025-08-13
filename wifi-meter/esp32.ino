@@ -1,5 +1,10 @@
 #define AMPEREMETER_PIN_0  27 //
 #define AMPEREMETER_PIN_1  14
+//#define AMPEREMETER_PIN_2  14
+//#define AMPEREMETER_PIN_3  14
+//#define AMPEREMETER_PIN_4  14
+//#define AMPEREMETER_PIN_5  14
+
 #define LED_PIN 17
 #define NUMPIXELS 4
 
@@ -7,8 +12,8 @@
 #include <Adafruit_NeoPixel.h>
 
 // Daten des WiFi-Netzwerks
-const char* ssid     = "Nein";
-const char* password = "Nein";
+const char* ssid     = "nein";
+const char* password = "nein";
 
 // Port des Webservers auf 80 setzen
 WiFiServer server(80);
@@ -20,12 +25,29 @@ String header;
 // setting PWM properties
 const int freq = 5000;
 const int ledChannel = 0;
+const int ledChannel_1 = 1;
+const int ledChannel_2 = 2;
+const int ledChannel_3 = 3;
+const int ledChannel_4 = 4;
+const int ledChannel_5 = 5;
 const int resolution = 8;
 // set amperemeter limit duty
 int limitDuty = 120;
 
 // WS2812B LED
 Adafruit_NeoPixel ws2812b = Adafruit_NeoPixel(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+void setLEDColor(int target, int red, int green, int blue) {
+  ws2812b.setPixelColor(target*2, ws2812b.Color(red, green, blue));
+  ws2812b.setPixelColor(target*2+1, ws2812b.Color(red, green, blue));
+  ws2812b.show();
+}
+
+void setAmperemeterValue(int target, int util) {
+  int duty = util * 1.15;
+  if(duty > limitDuty) duty = limitDuty;
+  ledcWrite(target, duty);
+}
 
 void processData(String data) {
   //Serial.println(data);
@@ -39,6 +61,8 @@ void processData(String data) {
     int green = amperemeterData.substring(12, 15).toInt();
     int blue = amperemeterData.substring(15, 18).toInt();
     Serial.println("Target: " + String(amperemeterTarget) + ", Util: " + String(util) + ", Red: " + String(red) + ", Green: " + String(green) + ", Blue: " + String(blue));
+    if (amperemeterTarget < 3) setAmperemeterValue(amperemeterTarget, util); //restraint, cause only two meters are connected currently
+    if (amperemeterTarget < 3) setLEDColor(amperemeterTarget, red, green, blue); //restraint, cause only two meters are connected currently
     data = data.substring(18);
   }
   
@@ -52,9 +76,17 @@ void setup() {
   gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_0, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
   gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_1, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
   ledcSetup(ledChannel, freq, resolution);
-  ledcSetup(ledChannel+1, freq, resolution);
+  ledcSetup(ledChannel_1, freq, resolution);
+  ledcSetup(ledChannel_2, freq, resolution);
+  ledcSetup(ledChannel_3, freq, resolution);
+  ledcSetup(ledChannel_4, freq, resolution);
+  ledcSetup(ledChannel_5, freq, resolution);
   ledcAttachPin(AMPEREMETER_PIN_0, ledChannel);
-  ledcAttachPin(AMPEREMETER_PIN_1, ledChannel+1);
+  ledcAttachPin(AMPEREMETER_PIN_1, ledChannel_1);
+  //ledcAttachPin(AMPEREMETER_PIN_2, ledChannel_2);
+  //ledcAttachPin(AMPEREMETER_PIN_3, ledChannel_3);
+  //ledcAttachPin(AMPEREMETER_PIN_4, ledChannel_4);
+  //ledcAttachPin(AMPEREMETER_PIN_5, ledChannel_5);
   /*
   randomSeed(analogRead(0));
   */
