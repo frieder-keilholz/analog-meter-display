@@ -7,8 +7,8 @@
 #include <Adafruit_NeoPixel.h>
 
 // Daten des WiFi-Netzwerks
-const char* ssid     = "nein";
-const char* password = "nein";
+const char* ssid     = "Nein";
+const char* password = "Nein";
 
 // Port des Webservers auf 80 setzen
 WiFiServer server(80);
@@ -27,6 +27,22 @@ int limitDuty = 120;
 // WS2812B LED
 Adafruit_NeoPixel ws2812b = Adafruit_NeoPixel(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
+void processData(String data) {
+  //Serial.println(data);
+  while (data.length() >= 18 && data.startsWith("/A"))  // Check if the string starts with '/A' and has enough length
+  {
+    String amperemeterData = data.substring(0, 18);
+    Serial.println(amperemeterData);
+    int amperemeterTarget = amperemeterData.substring(2, 3).toInt();
+    int util = amperemeterData.substring(5, 7).toInt();
+    int red = amperemeterData.substring(9, 12).toInt();
+    int green = amperemeterData.substring(12, 15).toInt();
+    int blue = amperemeterData.substring(15, 18).toInt();
+    Serial.println("Target: " + String(amperemeterTarget) + ", Util: " + String(util) + ", Red: " + String(red) + ", Green: " + String(green) + ", Blue: " + String(blue));
+    data = data.substring(18);
+  }
+  
+}
 
 void setup() {
   Serial.begin(115200);
@@ -71,7 +87,7 @@ void loop(){
       currentTime = millis();
       if (client.available()) {             // if there's bytes to read from the client,
         char c = client.read();             // read a byte, then
-        //Serial.write(c);                    // print it out the serial monitor
+        Serial.write(c);                    // print it out the serial monitor
         header += c;
         if (c == '\n') {                    // if the byte is a newline character
           // if the current line is blank, you got two newline characters in a row.
@@ -83,59 +99,14 @@ void loop(){
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
-            
-            // read util and set util value
-            if (header.indexOf("GET /util/") >= 0) {
-              Serial.println("UTIL set");
-              String util_value = header.substring(header.indexOf("GET /util/")+10);
-              util_value = util_value.substring(0,util_value.indexOf('/'));
-              Serial.print("Util: ");
-              Serial.println(util_value);
-              int util = util_value.toInt();
-              int duty = util * 1.15;
-              if(duty > limitDuty) duty = limitDuty;
-              int analog_target = header.substring(header.indexOf("/target/")+8,header.indexOf("/color/")).toInt();
-              if (analog_target>=0){
-                ledcWrite(ledChannel+analog_target, duty);
-              }else{
-                ledcWrite(ledChannel, duty);
-              }
-              ledcWrite(ledChannel, duty);
-            }else{
-              Serial.println("No Util Found");
+            if (header.indexOf("GET /A") >= 0) {
+              String data = header.substring(4);
+              processData(data); // Methode aufrufen und String ausgeben
             }
-            // read and set color value
-            if (header.indexOf("/color/") >= 0) {
-              Serial.println("COLOR set");
-              String color_value = header.substring(header.indexOf("/color/r/")+9);
-              String r_value = color_value.substring(0, color_value.indexOf('/'));
-              Serial.print("R:");
-              Serial.println(r_value);
-              String g_value = color_value.substring(color_value.indexOf("/g/")+3,color_value.indexOf("/b"));
-              Serial.print("G:");
-              Serial.println(g_value);
-              String b_value = color_value.substring(color_value.indexOf("/b/")+3);
-              b_value = b_value.substring(0, b_value.indexOf('/'));
-              Serial.print("B:");
-              Serial.println(b_value);
-              //ws2812b.clear();
-              int analog_target = header.substring(header.indexOf("/target/")+8,header.indexOf("/color/")).toInt();
-              int LED_Pos = 0;
-              if (analog_target>=0){
-                LED_Pos = (analog_target*2);
-              }
-              for(int j = LED_Pos; j<analog_target+2; j++){
-                ws2812b.setPixelColor(j, ws2812b.Color(r_value.toInt(),g_value.toInt(),b_value.toInt()));
-                ws2812b.show();
-              }
-            }
-
-            if (header.indexOf("/target/") >= 0) {
-              Serial.print("Target Channel: ");
-              Serial.println(header.substring(header.indexOf("/target/")+8,header.indexOf("/color/")));
+            else{
+              Serial.write("[ERR] not a get request");
             }
             
-            client.println();
             break;
           }else{
             currentLine = "";
@@ -151,4 +122,5 @@ void loop(){
     Serial.println("Client disconnected.");
     Serial.println("");
   }
+
 }
