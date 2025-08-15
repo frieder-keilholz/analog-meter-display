@@ -1,35 +1,29 @@
-import gpustat
-import psutil
+import platform
+from tokenize import String
 import urllib.request
-import yaml.loader
 import time
 import logging
+
+import yaml
+
+from dataGathererLnx import get_sys_data_lnx
+from dataGathererWin import get_sys_data_win
 
 logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
 
 meters = yaml.safe_load(open('client/meters.yml'))
+options = []
 
-def get_cpu_percent():
-    return str(int(psutil.cpu_percent()))
+def init_options():
+    for meter in meters['meters']:
+        options.append(meter['metric'])
+    print("Options initialized:", options)
 
-def get_cpu_temp():
-    #print("iny")
-    return '0'
-
-def get_memory_percent():
-    return str(int(psutil.virtual_memory().percent))
-
-def get_gpu_percent():
-    gpu_stats = gpustat.GPUStatCollection.new_query()
-    return str(gpu_stats.gpus[0].utilization)
-
-def get_gpu_temp():
-    #print("iny")
-    return '0'
-
-def get_video_memory():
-    #print("iny")
-    return '0'
+def get_sys_data(options):
+    if platform.system() == "Windows":
+        return get_sys_data_win(options)
+    else:
+        return get_sys_data_lnx(options)
 
 def get_color_gradient(color_thresholds, util):
     color_thresholds = sorted(color_thresholds, key=lambda x: x['target-value'])
@@ -69,16 +63,17 @@ def get_normalized_util(util):
         util = '0' + util
     return util
 
-options = {
-    'cpu-percent': get_cpu_percent,
-    'cpu-temp': get_cpu_temp,
-    'memory-percent': get_memory_percent,
-    'gpu-percent': get_gpu_percent,
-    'gpu-temp': get_gpu_temp,
-    'video-memory-percent':get_video_memory
-}
+init_options()
 
 while True:
+    #get system data
+    try:
+        sys_data = get_sys_data(options)
+    except Exception as e:
+        print("Error getting system data: ", e)
+        break
+
+    print(sys_data)
     data_string = ""
     for meter in meters['meters']:
         logging.debug(meter)
@@ -86,8 +81,10 @@ while True:
         #Add target number for analog meter
         data_string = data_string + "/A" + str(meter['analog-target'])
         #Add util value
-        util = options[meter['metric']]()
-        data_string = data_string + "/U" + get_normalized_util(util)
+        util = sys_data.get(meter['metric'])
+        if isinstance(util, float):
+            util = int(util)
+        data_string = data_string + "/U" + get_normalized_util(str(util))
         #Add color values
         if 'color-thresholds' in meter:
             data_string = data_string + "/C" + get_normalized_color_valus(get_color_thresholds(meter['color-thresholds'], int(util)))

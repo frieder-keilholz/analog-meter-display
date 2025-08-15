@@ -1,30 +1,30 @@
-interval: 2
+interval: 0.5
 ip: 192.168.178.114
 port: 80
 meters:
 - cpu-load:
   metric: cpu-percent
-  analog-target: 8
+  analog-target: 0
   color-gradient:
     - target-value: 0
-      color: [0, 255, 0]
+      color: [255, 255, 255]
     - target-value: 40
-      color: [255, 255, 0]
+      color: [0,0, 255]
     - target-value: 80
-      color: [255, 0, 0]
+      color: [128, 128, 0]
 - cpu-temp:
   metric: cpu-temp
-  analog-target: 3
+  analog-target: 1
   color-gradient:
-    - target-value: 0
+    - target-value: 30
       color: [0, 255, 0]
-    - target-value: 40
+    - target-value: 60
       color: [255, 255, 0]
-    - target-value: 80
+    - target-value: 90
       color: [255, 0, 0]
 - ram:
   metric: memory-percent
-  analog-target: 0
+  analog-target: 2
   color-gradient:
     - target-value: 0
       color: [0, 255, 0]
@@ -34,7 +34,7 @@ meters:
       color: [255, 0, 0]
 - gpu-load:
   metric: gpu-percent
-  analog-target: 1
+  analog-target: 3
   color-gradient:
     - target-value: 0
       color: [0, 255, 0]
