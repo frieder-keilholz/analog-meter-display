@@ -73,7 +73,7 @@ while True:
         print("Error getting system data: ", e)
         break
 
-    print(sys_data)
+    #print(sys_data)
     data_string = ""
     for meter in meters['meters']:
         logging.debug(meter)

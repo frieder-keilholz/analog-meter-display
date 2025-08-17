@@ -1,4 +1,4 @@
-interval: 5
+interval: 1
 ip: 192.168.178.114
 port: 80
 meters:
