@@ -67,6 +67,21 @@ void processData(String data) {
   }
   
 }
+void startupAnimation(){
+  int count = 6;
+  for (int i = 0; i < count; i++)
+  {
+    for (int j = 0; j < 100; j++)
+    {
+      setLEDColor(i, j*2, j*2, j*2);
+      setAmperemeterValue(i, j);
+      delay(10);
+    }
+    setAmperemeterValue(i, 0);
+    delay(100);
+  }
+  
+}
 
 void setup() {
   Serial.begin(115200);
@@ -109,6 +124,7 @@ void setup() {
   server.begin();
   delay(1000);
   Serial.println("Server up");
+  startupAnimation(); // Start with a startup animation
 }
 
 void loop(){
