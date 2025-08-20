@@ -3,7 +3,7 @@
 #define AMPEREMETER_PIN_2  26
 #define AMPEREMETER_PIN_3  25
 #define AMPEREMETER_PIN_4  33
-#define AMPEREMETER_PIN_5  52
+#define AMPEREMETER_PIN_5  32
 
 #define LED_PIN 17
 #define NUMPIXELS 4
@@ -44,7 +44,7 @@ void setLEDColor(int target, int red, int green, int blue) {
 }
 
 void setAmperemeterValue(int target, int util) {
-  int duty = util * 1.15;
+  int duty = util * 1.2;
   if(duty > limitDuty) duty = limitDuty;
   ledcWrite(target, duty);
 }
@@ -61,7 +61,7 @@ void processData(String data) {
     int green = amperemeterData.substring(12, 15).toInt();
     int blue = amperemeterData.substring(15, 18).toInt();
     Serial.println("Target: " + String(amperemeterTarget) + ", Util: " + String(util) + ", Red: " + String(red) + ", Green: " + String(green) + ", Blue: " + String(blue));
-    if (amperemeterTarget < 3) setAmperemeterValue(amperemeterTarget, util); //restraint, cause only two meters are connected currently
+    if (amperemeterTarget < 7) setAmperemeterValue(amperemeterTarget, util); //restraint, cause only two meters are connected currently
     if (amperemeterTarget < 3) setLEDColor(amperemeterTarget, red, green, blue); //restraint, cause only two meters are connected currently
     data = data.substring(18);
   }
@@ -75,6 +75,10 @@ void setup() {
 
   gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_0, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
   gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_1, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_2, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_3, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_4, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
+  gpio_set_drive_capability((gpio_num_t)AMPEREMETER_PIN_5, GPIO_DRIVE_CAP_0); // Set drive strength to ~10mA
   ledcSetup(ledChannel, freq, resolution);
   ledcSetup(ledChannel_1, freq, resolution);
   ledcSetup(ledChannel_2, freq, resolution);
@@ -83,10 +87,10 @@ void setup() {
   ledcSetup(ledChannel_5, freq, resolution);
   ledcAttachPin(AMPEREMETER_PIN_0, ledChannel);
   ledcAttachPin(AMPEREMETER_PIN_1, ledChannel_1);
-  //ledcAttachPin(AMPEREMETER_PIN_2, ledChannel_2);
-  //ledcAttachPin(AMPEREMETER_PIN_3, ledChannel_3);
-  //ledcAttachPin(AMPEREMETER_PIN_4, ledChannel_4);
-  //ledcAttachPin(AMPEREMETER_PIN_5, ledChannel_5);
+  ledcAttachPin(AMPEREMETER_PIN_2, ledChannel_2);
+  ledcAttachPin(AMPEREMETER_PIN_3, ledChannel_3);
+  ledcAttachPin(AMPEREMETER_PIN_4, ledChannel_4);
+  ledcAttachPin(AMPEREMETER_PIN_5, ledChannel_5);
   /*
   randomSeed(analogRead(0));
   */
