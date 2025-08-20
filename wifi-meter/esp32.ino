@@ -62,7 +62,7 @@ void processData(String data) {
     int blue = amperemeterData.substring(15, 18).toInt();
     Serial.println("Target: " + String(amperemeterTarget) + ", Util: " + String(util) + ", Red: " + String(red) + ", Green: " + String(green) + ", Blue: " + String(blue));
     if (amperemeterTarget < 7) setAmperemeterValue(amperemeterTarget, util); //restraint, cause only two meters are connected currently
-    if (amperemeterTarget < 3) setLEDColor(amperemeterTarget, red, green, blue); //restraint, cause only two meters are connected currently
+    if (amperemeterTarget < 7) setLEDColor(amperemeterTarget, red, green, blue); //restraint, cause only two meters are connected currently
     data = data.substring(18);
   }
   
