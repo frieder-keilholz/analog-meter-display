@@ -23,7 +23,7 @@ int timeoutTime = 3000;
 String header;
 
 // setting PWM properties
-const int freq = 5000;
+const int freq = 20000; // 20kHz
 const int ledChannel = 0;
 const int ledChannel_1 = 1;
 const int ledChannel_2 = 2;
