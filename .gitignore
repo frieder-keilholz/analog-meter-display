@@ -3,3 +3,4 @@
 .vscode/c_cpp_properties.json
 client/__pycache__/dataGathererLnx.cpython-312.pyc
 client/__pycache__/dataGathererWin.cpython-312.pyc
+
