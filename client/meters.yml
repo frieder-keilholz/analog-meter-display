@@ -4,7 +4,7 @@ port: 80
 meters:
 - cpu-load:
   metric: cpu-percent
-  analog-target: 0
+  analog-target: 5
   color-gradient:
     - target-value: 0
       color: [0, 255, 0]
@@ -14,7 +14,7 @@ meters:
       color: [255, 0, 0]
 - cpu-temp:
   metric: cpu-temp
-  analog-target: 1
+  analog-target: 4
   color-gradient:
     - target-value: 30
       color: [0, 255, 0]
@@ -24,7 +24,7 @@ meters:
       color: [255, 0, 0]
 - ram:
   metric: memory-percent
-  analog-target: 2
+  analog-target: 3
   color-gradient:
     - target-value: 35
       color: [0, 255, 0]
@@ -34,7 +34,7 @@ meters:
       color: [255, 0, 0]
 - gpu-load:
   metric: gpu-percent
-  analog-target: 3
+  analog-target: 0
   color-gradient:
     - target-value: 5
       color: [0, 255, 0]
@@ -44,7 +44,7 @@ meters:
       color: [255, 0, 0]
 - vram:
   metric: video-memory-percent
-  analog-target: 4
+  analog-target: 2
   color-gradient:
     - target-value: 20
       color: [0, 255, 0]
@@ -54,7 +54,7 @@ meters:
       color: [255, 0, 0]
 - gpu-temp:
   metric: gpu-temp
-  analog-target: 5
+  analog-target: 1
   color-gradient:
     - target-value: 30
       color: [0, 255, 0]

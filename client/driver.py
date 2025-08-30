@@ -8,11 +8,18 @@ import yaml
 
 from dataGathererLnx import get_sys_data_lnx
 from dataGathererWin import get_sys_data_win
+import signal
+import sys
 
 logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
 
 meters = yaml.safe_load(open('client/meters.yml'))
 options = []
+
+def handle_shutdown(signum, frame):
+    url = "http://" + meters['ip']+":"+str(meters['port'])+ "/A0/U00/C000000000/A1/U00/C000000000/A2/U00/C000000000/A3/U00/C000000000/A4/U00/C000000000/A5/U00/C000000000/"
+    sendRequest(url)
+    sys.exit(0)
 
 def init_options():
     for meter in meters['meters']:
@@ -65,6 +72,23 @@ def get_normalized_util(util):
 
 init_options()
 
+def sendRequest(url: String):
+    try:
+        urllib.request.urlopen(url , timeout=1)
+    except TimeoutError as te:
+        print("TimeoutError")
+        logging.error(te)
+    except urllib.error.URLError as urle:
+        print("URLError")
+        logging.error(urle)
+    except Exception as e:
+        print("Error {0}".format(e))
+        logging.error(e)
+
+signal.signal(signal.SIGINT, handle_shutdown)   # z.B. Strg+C
+signal.signal(signal.SIGTERM, handle_shutdown)  # z.B. Shutdown/kill
+
+#the main loop
 while True:
     #get system data
     try:
@@ -96,48 +120,5 @@ while True:
     #build and send GET request to server
     url = "http://" + meters['ip']+":"+str(meters['port'])+ data_string
     print(url)
-    try:
-        urllib.request.urlopen(url , timeout=1)
-    except TimeoutError as te:
-        print("TimeoutError")
-        logging.error(te)
-    except urllib.error.URLError as urle:
-        print("URLError")
-        logging.error(urle)
-    except Exception as e:
-        print("Error {0}".format(e))
-        logging.error(e)
-    logging.debug('sleep for ' + str(meters['interval']) + ' seconds')
-    time.sleep(meters['interval'])
+    sendRequest(url)
 
-#old com logic
-"""
-        logging.debug(meter)
-        #get corresponding metric function
-        util = options[meter['metric']]()
-
-        #set corresponding color
-        if 'color-thresholds' in meter:
-            util_color = get_color_thresholds(meter['color-thresholds'], int(util))
-        elif 'color-gradient' in meter:
-            util_color = get_color_gradient(meter['color-gradient'], int(util))
-
-        #build and send GET request to server
-        if util_color != 'none':
-            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/target/"+str(meter['analog-target'])+"/color/r/"+str(util_color[0])+"/g/"+str(util_color[1])+"/b/"+str(util_color[2])
-            print(url)
-        else:
-            url = "http://" + meter['ip']+":"+str(meter['port'])+"/util/"+util+"/target/"+str(meter['analog-target'])
-        logging.info(url)
-        try:
-            urllib.request.urlopen(url + "/" + util +"/", timeout=1)
-        except TimeoutError as te:
-            print("TimeoutError")
-            logging.error(te)
-        except urllib.error.URLError as urle:
-            print("URLError")
-            logging.error(urle)
-        except Exception as e:
-            print("Error {0}".format(e))
-            logging.error(e)
-        """
