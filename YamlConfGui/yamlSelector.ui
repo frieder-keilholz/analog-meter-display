@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.4" author="PygubuDesigner 0.41">
+  <project>
+    <settings />
+    <customwidgets />
+  </project>
+  <object class="tk.Tk" id="tk1">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <child>
+      <object class="tk.Frame" id="frame1">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="row">0</property>
+          <property name="sticky">nw</property>
+        </layout>
+        <child>
+          <object class="ttk.Combobox" id="combobox1">
+            <layout manager="pack">
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame6">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="row">0</property>
+          <property name="sticky">n</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame7">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="row">0</property>
+          <property name="sticky">ne</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame8">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame9">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame10">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame11">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">3</property>
+          <property name="ipadx">10</property>
+          <property name="padx">20</property>
+          <property name="pady">10</property>
+          <property name="row">2</property>
+          <property name="sticky">s</property>
+        </layout>
+        <child>
+          <object class="tk.Entry" id="ipBox" named="True">
+            <property name="text" translatable="yes">ip</property>
+            <property name="textvariable">string:ip</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">10</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Entry" id="portBox" named="True">
+            <property name="text" translatable="yes">port</property>
+            <property name="textvariable">string:port</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="SaveBttn" named="True">
+            <property name="text" translatable="yes">Save</property>
+            <layout manager="grid">
+              <property name="column">3</property>
+              <property name="padx">10</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="CancelBttn" named="True">
+            <property name="text" translatable="yes">Cancel</property>
+            <layout manager="grid">
+              <property name="column">4</property>
+              <property name="padx">10</property>
+              <property name="row">0</property>
+              <property name="sticky">e</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Entry" id="intervalBox" named="True">
+            <property name="text" translatable="yes">interval</property>
+            <property name="textvariable">string:interval</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="padx">10</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
