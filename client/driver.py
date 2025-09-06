@@ -6,8 +6,6 @@ import logging
 
 import yaml
 
-from dataGathererLnx import get_sys_data_lnx
-from dataGathererWin import get_sys_data_win
 
 logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
 
@@ -21,8 +19,10 @@ def init_options():
 
 def get_sys_data(options):
     if platform.system() == "Windows":
+        from dataGathererWin import get_sys_data_win
         return get_sys_data_win(options)
     else:
+        from dataGathererLnx import get_sys_data_lnx
         return get_sys_data_lnx(options)
 
 def get_color_gradient(color_thresholds, util):
