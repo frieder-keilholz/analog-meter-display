@@ -62,6 +62,26 @@ meters:
       color: [255, 255, 0]
     - target-value: 85
       color: [255, 0, 0]
+- incoming-data:
+  metric: incoming-data
+  analog-target: 6
+  color-gradient:
+    - target-value: 0
+      color: [0, 255, 0]
+    - target-value: 50
+      color: [255,255, 0]
+    - target-value: 100
+      color: [255, 0, 0]
+- outgoing-data:
+  metric: outgoing-data
+  analog-target: 7
+  color-gradient:
+    - target-value: 0 
+      color: [0, 255, 0]
+    - target-value: 50
+      color: [255,255, 0]
+    - target-value: 100
+      color: [255, 0, 0]
 
 #...
 #- laptop-ram:

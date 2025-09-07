@@ -116,6 +116,7 @@ while True:
             data_string = data_string + "/C" + get_normalized_color_valus(get_color_gradient(meter['color-gradient'], int(util)))
         
     #await defined interval
+    time.sleep(meters['interval'])
     #print(data_string)
     #build and send GET request to server
     url = "http://" + meters['ip']+":"+str(meters['port'])+ data_string

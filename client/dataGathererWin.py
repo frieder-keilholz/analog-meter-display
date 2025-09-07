@@ -27,6 +27,12 @@ def get_sys_data_win(options):
         if 'video-memory-percent' in options and sensor.SensorType == u'Load' and 'GPU Memory' == sensor.Name:
             dataDict['video-memory-percent'] = sensor.Value
             sensor_count -= 1
+        if 'incoming-data' in options and sensor.SensorType == u'Network' and 'Network In' == sensor.Name:
+            dataDict['incoming-data'] = sensor.Value
+            sensor_count -= 1
+        if 'outgoing-data' in options and sensor.SensorType == u'Network' and 'Network Out' == sensor.Name:
+            dataDict['outgoing-data'] = sensor.Value
+            sensor_count -= 1
         if sensor_count == 0:
             break
     #end_time = time.time()  # Endzeit erfassen

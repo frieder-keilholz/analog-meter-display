@@ -1,0 +1,70 @@
+interval: 1
+ip: 192.168.178.114
+port: 80
+meters:
+- cpu-load:
+  metric: cpu-percent
+  analog-target: 5
+  color-gradient:
+    - target-value: 0
+      color: [0, 200, 0]
+    - target-value: 50
+      color: [100, 0, 175]
+    - target-value: 100
+      color: [0, 0, 200]
+- cpu-temp:
+  metric: cpu-temp
+  analog-target: 4
+  color-gradient:
+    - target-value: 35
+      color: [0, 200, 0]
+    - target-value: 70
+      color: [75, 0, 175]
+    - target-value: 90
+      color: [0, 0, 200]
+- ram:
+  metric: memory-percent
+  analog-target: 3
+  color-gradient:
+    - target-value: 35
+      color: [0, 200, 0]
+    - target-value: 60
+      color: [75, 0, 175]
+    - target-value: 95
+      color: [0, 0, 200]
+- gpu-load:
+  metric: gpu-percent
+  analog-target: 0
+  color-gradient:
+    - target-value: 5
+      color: [0, 200, 0]
+    - target-value: 70
+      color: [75, 0, 175]
+    - target-value: 100
+      color: [0, 0, 200]
+- vram:
+  metric: video-memory-percent
+  analog-target: 2
+  color-gradient:
+    - target-value: 20
+      color: [0, 200, 0]
+    - target-value: 70
+      color: [75, 0, 175]
+    - target-value: 90
+      color: [0, 0, 200]
+- gpu-temp:
+  metric: gpu-temp
+  analog-target: 1
+  color-gradient:
+    - target-value: 30
+      color: [0, 200, 0]
+    - target-value: 60
+      color: [75, 0, 175]
+    - target-value: 85
+      color: [0, 0, 200]
+
+#...
+#- laptop-ram:
+#  metric: memory-percent
+#  
+#...
