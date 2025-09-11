@@ -16,7 +16,7 @@ meters:
   metric: cpu-temp
   analog-target: 4
   color-gradient:
-    - target-value: 35
+    - target-value: 40
       color: [0, 200, 0]
     - target-value: 70
       color: [75, 0, 175]
@@ -56,7 +56,7 @@ meters:
   metric: gpu-temp
   analog-target: 1
   color-gradient:
-    - target-value: 30
+    - target-value: 35
       color: [0, 200, 0]
     - target-value: 60
       color: [75, 0, 175]

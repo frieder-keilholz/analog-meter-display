@@ -11,7 +11,7 @@ import sys
 
 logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
 
-meters = yaml.safe_load(open('client/meters.yml'))
+meters = yaml.safe_load(open('/home/furycapricorn/Documents/Programmierung/analog-meter-display/client/meters.yml'))
 options = []
 
 def handle_shutdown(signum, frame):
@@ -68,6 +68,8 @@ def get_normalized_color_valus(color_values):
 def get_normalized_util(util):
     if (len(util)<2):
         util = '0' + util
+    elif (len(util)>2):
+        util = '99'
     return util
 
 init_options()
