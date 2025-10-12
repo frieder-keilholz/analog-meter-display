@@ -13,8 +13,14 @@ import sys
 
 logging.basicConfig(filename='analog-meter.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s)')
 
-meters = yaml.safe_load(open('client/meters.yml'))
+try:
+    meters = yaml.safe_load(open('client/meters.yml'))
+except:
+    meters = yaml.safe_load(open('_internal/meters.yml'))
 options = []
+active_options_count = 0
+oldUtil=[]
+smoothing_cilce = 0
 
 def handle_shutdown(signum, frame):
     url = "http://" + meters['ip']+":"+str(meters['port'])+ "/A0/U00/C000000000/A1/U00/C000000000/A2/U00/C000000000/A3/U00/C000000000/A4/U00/C000000000/A5/U00/C000000000/"
@@ -22,9 +28,19 @@ def handle_shutdown(signum, frame):
     sys.exit(0)
 
 def init_options():
+    global active_options_count
+    active_options_count = 0
     for meter in meters['meters']:
         options.append(meter['metric'])
+        active_options_count += 1
     print("Options initialized:", options)
+
+    if platform.system() == "Windows":
+        import win32api,win32process,win32con
+
+        pid = win32api.GetCurrentProcessId()
+        handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, True, pid)
+        win32process.SetPriorityClass(handle, win32process.THREAD_PRIORITY_LOWEST)
 
 def get_sys_data(options):
     if platform.system() == "Windows":
@@ -66,6 +82,9 @@ def get_normalized_color_valus(color_values):
 
 #normalizes util values to be always two characters. EX: 6 --> 02      
 def get_normalized_util(util):
+    
+    if(len(util)>2):
+        util = '99'
     if (len(util)<2):
         util = '0' + util
     return util
@@ -100,12 +119,13 @@ while True:
     #print(sys_data)
     data_string = ""
     for meter in meters['meters']:
-        logging.debug(meter)
+        #logging.debug(meter)
         #print(meter)
         #Add target number for analog meter
         data_string = data_string + "/A" + str(meter['analog-target'])
         #Add util value
         util = sys_data.get(meter['metric'])
+        
         if isinstance(util, float):
             util = int(util)
         data_string = data_string + "/U" + get_normalized_util(str(util))
@@ -119,6 +139,6 @@ while True:
     #print(data_string)
     #build and send GET request to server
     url = "http://" + meters['ip']+":"+str(meters['port'])+ data_string
-    print(url)
+    #print(url)
     sendRequest(url)
 
