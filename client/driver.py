@@ -91,7 +91,7 @@ def get_normalized_util(util):
 
 init_options()
 
-def sendRequest(url: String):
+def sendRequest(url: str):
     try:
         urllib.request.urlopen(url , timeout=1)
     except TimeoutError as te:

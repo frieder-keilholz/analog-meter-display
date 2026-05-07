@@ -5,10 +5,58 @@ url = 'http://127.0.0.1:8085'
 
 #TODO Initilizing methode to distinguish between intelcpu and amd cpu and to check if LibreHardwareMonitor is running, otherwise raise exception
 #TODO also for gpus
-cpuVendor = "/intelcpu"
-gpuVendor = "/gpu-nvidia"
+
+cpuVendor = None
+gpuVendor = None
+
+def initialize_vendors():
+    global cpuVendor, gpuVendor
+    
+    # Versuche CPU zu erkennen
+    cpu_paths = ['/intelcpu', '/amdcpu']
+    for cpu_path in cpu_paths:
+        try:
+            resp = requests.post(url=url + "/Sensor", 
+                                params=dict(id=cpu_path + "/0/load/0", action="Get"), 
+                                timeout=1)
+            if resp.status_code == 200:
+                resp.json()  # Verify it's valid JSON
+                cpuVendor = cpu_path
+                print(f"CPU detected: {cpu_path}")
+                break
+        except:
+            continue
+    
+    if cpuVendor is None:
+        raise Exception("No supported CPU found (tried: Intel, AMD)!")
+    
+    # Versuche GPU zu erkennen - nehme die letzte gefundene
+    gpu_paths = ['/gpu-nvidia', '/gpu-amd', '/gpu-intel']
+    gpu_found = []
+    
+    for gpu_path in gpu_paths:
+        try:
+            resp = requests.post(url=url + "/Sensor", 
+                                params=dict(id=gpu_path + "/0/load/0", action="Get"), 
+                                timeout=1)
+            if resp.status_code == 200:
+                resp.json()  # Verify it's valid JSON
+                gpu_found.append(gpu_path)
+                print(f"GPU detected: {gpu_path}")
+        except:
+            continue
+    
+    if gpu_found:
+        gpuVendor = gpu_found[0]  # Nimm die letzte gefundene GPU
+        print(f"Using GPU vendor: {gpuVendor}")
+    else:
+        raise Exception("No supported GPU found (tried: Nvidia, AMD, Intel)!")
 
 def get_sys_data_win(options):
+    global cpuVendor, gpuVendor
+    if cpuVendor is None:
+        initialize_vendors()
+    
     start_time = time.time()
 
     dataDict = {}
@@ -51,16 +99,14 @@ def get_sys_data_win(options):
     if dataDict:
         return dataDict
     else:
-        raise Exception("LibreHardwareMonitor not running! Please launch it!") 
-
-
+        raise Exception("LibreHardwareMonitor not running! Please launch it!")
 
 
 def main():
     params = dict(id="/ram/load/0", action="Get")
     resp = requests.post(url=url + "/Sensor", params=params, timeout=1)
     data = json.loads(resp.text)
-    #print(data)
+    print(data)
     print(data['value'])
 
 
